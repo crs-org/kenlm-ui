@@ -1,0 +1,5 @@
+.idea/
+.venv/
+.ruff_cache/
+
+flagged/
