@@ -1,4 +1,4 @@
-FROM python:3.13.2-bookworm
+FROM python:3.12.9-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -11,10 +11,9 @@ RUN apt-get update && \
     curl \
     ca-certificates \
     # python build dependencies \
-    build-essential \
+    build-essential cmake libicu-dev libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev libeigen3-dev zlib1g-dev libbz2-dev liblzma-dev \
     libssl-dev \
     zlib1g-dev \
-    libbz2-dev \
     libreadline-dev \
     libsqlite3-dev \
     libncursesw5-dev \
@@ -49,8 +48,18 @@ COPY --chown=hf-space:hf-space . ${HOME}/app
 
 WORKDIR ${HOME}/app
 
+RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz && \
+    mkdir kenlm/build && \
+    cd kenlm/build && \
+    cmake .. && \
+    make -j2 && \
+    cd ../..
+
 RUN mkdir ${HF_HOME} && chmod a+rwx ${HF_HOME}
 
 RUN pip install --no-cache-dir -r /home/hf-space/app/requirements.txt
+
+# Install KenLM module
+RUN pip install https://github.com/kpu/kenlm/archive/master.zip
 
 CMD ["python", "app.py"]
