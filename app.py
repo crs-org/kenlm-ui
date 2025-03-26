@@ -286,12 +286,16 @@ def text_to_kenlm(
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name} {file_name_quantized}"
             print(subprocess.run(cmd, shell=True))
+
+            file_name = file_name_quantized
     else:
         if _do_quantize:
             file_name = f"{app_dir}/my_model-{_binary_type}.bin"
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name_fixed} {file_name}"
             print(subprocess.run(cmd, shell=True))
+
+    gr.Success("Model created.")
 
     return gr.DownloadButton(value=Path(file_name), label=f"Download: {file_name}")
 
