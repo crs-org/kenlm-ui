@@ -217,6 +217,8 @@ def text_to_kenlm(
     if not _order:
         raise gr.Error("Please add an order.")
 
+    gr.Info("Started to make the model, wait...")
+
     results = []
 
     # Read the file
