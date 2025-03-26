@@ -228,7 +228,7 @@ def text_to_kenlm(
             results.append(line)
 
     # Write to intermediate file
-    intermediate_file = f"{app_dir}/intermediate.txt"
+    intermediate_file = f"/tmp/intermediate.txt"
     with open(intermediate_file, "w") as f:
         f.write(" ".join(results))
 
