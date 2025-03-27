@@ -53,11 +53,11 @@ tech_libraries = f"""
 """.strip()
 
 
-def convert_and_filter_topk(output_dir, input_txt, top_k):
+def convert_and_filter_topk(input_txt, top_k):
     """Convert to lowercase, count word occurrences and save top-k words to a file"""
 
     counter = Counter()
-    data_lower = os.path.join(output_dir, "lower.txt.gz")
+    data_lower = "/tmp/lower.txt.gz"
 
     print("\nConverting to lowercase and counting word occurrences ...")
     with io.TextIOWrapper(
@@ -83,8 +83,7 @@ def convert_and_filter_topk(output_dir, input_txt, top_k):
     print("\nSaving top {} words ...".format(top_k))
     top_counter = counter.most_common(top_k)
     vocab_str = "\n".join(word for word, count in top_counter)
-    vocab_path = "vocab-{}.txt".format(top_k)
-    vocab_path = os.path.join(output_dir, vocab_path)
+    vocab_path = "/tmp/vocab-{}.txt".format(top_k)
     with open(vocab_path, "w+") as file:
         file.write(vocab_str)
 
@@ -294,7 +293,7 @@ def text_to_kenlm(
     if _do_limit_topk:
         file_name = f"/tmp/my_model-{_topk_words}-words.arpa"
 
-        _, vocab_str = convert_and_filter_topk(app_dir, intermediate_file, _topk_words)
+        _, vocab_str = convert_and_filter_topk(intermediate_file, _topk_words)
 
         print(
             subprocess.run(
