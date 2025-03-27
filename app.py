@@ -197,6 +197,30 @@ def enhance_text(kenlm_model, text):
 
     return fixed_label
 
+def generate_files(results):
+    # Write words to a file
+    words = [r.split() for r in results]
+    words = list(set([w for r in words for w in r]))
+
+    with open("/tmp/model_vocab.txt", "w") as f:
+        f.write("\n".join(words))
+
+    # Generate tokens file
+    tokens = set()
+    for word in words:
+        tokens.update(list(word))
+    # add "|" token
+    tokens.add("|")
+
+    with open("/tmp/model_tokens.txt", "w") as f:
+        tokens_ordered = sorted(tokens)
+        f.write("\n".join(tokens_ordered))
+
+    # Generate lexicon file
+    with open("/tmp/model_lexicon.txt", "w") as f:
+        for word in words:
+            splitted_word = " ".join(list(word + "|"))
+            f.write(f"{word}\t{splitted_word}\n")
 
 def text_to_kenlm(
     _text_file,
@@ -229,8 +253,10 @@ def text_to_kenlm(
                 line = line.lower()
             results.append(line)
 
+    generate_files(results)
+
     # Write to intermediate file
-    intermediate_file = f"/tmp/intermediate.txt"
+    intermediate_file = "/tmp/intermediate.txt"
     with open(intermediate_file, "w") as f:
         f.write(" ".join(results))
 
@@ -281,6 +307,8 @@ def text_to_kenlm(
             )
         )
 
+        generate_files(vocab_str.split("\n"))
+
         if _do_quantize:
             file_name_quantized = (
                 f"{app_dir}/my_model-{_binary_type}-{_topk_words}-words.bin"
@@ -299,7 +327,26 @@ def text_to_kenlm(
 
     gr.Success("Model created.")
 
-    return gr.DownloadButton(value=Path(file_name), label=f"Download: {file_name}")
+    model_file = gr.DownloadButton(
+        value=Path(file_name), label=f"Download: {file_name}"
+    )
+
+    vocab_file = gr.DownloadButton(
+        value=Path("/tmp/model_vocab.txt"),
+        label="Created model_vocab.txt",
+    )
+
+    lexicon_file = gr.DownloadButton(
+        value=Path("/tmp/model_lexicon.txt"),
+        label="Created model_lexicon.txt",
+    )
+
+    tokens_file = gr.DownloadButton(
+        value=Path("/tmp/model_tokens.txt"),
+        label="Created model_tokens.txt",
+    )
+
+    return [model_file, vocab_file, lexicon_file, tokens_file]
 
 
 with gr.Blocks(
@@ -401,9 +448,22 @@ with gr.Blocks(
                     value=False,
                 )
 
-            kenlm_model = gr.DownloadButton(
-                label="Created KenLM model",
-            )
+            with gr.Column():
+                kenlm_model = gr.DownloadButton(
+                    label="Created KenLM model",
+                )
+
+                vocab_file = gr.DownloadButton(
+                    label="Created model_vocab.txt",
+                )
+
+                lexicon_file = gr.DownloadButton(
+                    label="Created model_lexicon.txt",
+                )
+
+                tokens_file = gr.DownloadButton(
+                    label="Created model_tokens.txt",
+                )
 
         gr.Button("Create").click(
             text_to_kenlm,
@@ -420,7 +480,7 @@ with gr.Blocks(
                 topk_words,
                 do_limit_topk,
             ],
-            outputs=kenlm_model,
+            outputs=[kenlm_model, vocab_file, lexicon_file, tokens_file],
         )
 
         with gr.Row():
