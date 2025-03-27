@@ -263,7 +263,7 @@ def text_to_kenlm(
 
     # Commands to run in the container
     cmd = (
-        f"{kenlm_bin}/lmplz --temp_prefix /tmp --memory 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
+        f"{kenlm_bin}/lmplz -T /tmp -S 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
     )
     r = subprocess.run(cmd, shell=True)
     print(r)
