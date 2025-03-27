@@ -265,7 +265,10 @@ def text_to_kenlm(
     cmd = (
         f"{kenlm_bin}/lmplz --temp_prefix /tmp --memory 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
     )
-    print(subprocess.run(cmd, shell=True))
+    r = subprocess.run(cmd, shell=True)
+    print(r)
+    if r.returncode != 0:
+        raise gr.Error("Failed to create the model.")
 
     file_name = "/tmp/my_model.arpa"
     file_name_fixed = "/tmp/my_model_correct.arpa"
@@ -295,18 +298,19 @@ def text_to_kenlm(
 
         _, vocab_str = convert_and_filter_topk(intermediate_file, _topk_words)
 
-        print(
-            subprocess.run(
-                [
-                    os.path.join(kenlm_bin, "filter"),
-                    "single",
-                    "model:{}".format(file_name_fixed),
-                    file_name,
-                ],
-                input=vocab_str.encode("utf-8"),
-                check=True,
-            )
+        r = subprocess.run(
+            [
+                os.path.join(kenlm_bin, "filter"),
+                "single",
+                "model:{}".format(file_name_fixed),
+                file_name,
+            ],
+            input=vocab_str.encode("utf-8"),
+            check=True,
         )
+        print(r)
+        if r.returncode != 0:
+            raise gr.Error("Failed to filter the model.")
 
         generate_files(vocab_str.split("\n"))
 
@@ -316,7 +320,10 @@ def text_to_kenlm(
             )
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name} {file_name_quantized}"
-            print(subprocess.run(cmd, shell=True))
+            r = subprocess.run(cmd, shell=True)
+            print(r)
+            if r.returncode != 0:
+                raise gr.Error("Failed to quantize the model.")
 
             file_name = file_name_quantized
     else:
@@ -324,7 +331,10 @@ def text_to_kenlm(
             file_name = f"/tmp/my_model-{_binary_type}.bin"
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name_fixed} {file_name}"
-            print(subprocess.run(cmd, shell=True))
+            r = subprocess.run(cmd, shell=True)
+            print(r)
+            if r.returncode != 0:
+                raise gr.Error("Failed to quantize the model.")
 
     gr.Success("Model created.")
 
