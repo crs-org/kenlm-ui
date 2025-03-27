@@ -262,9 +262,10 @@ def text_to_kenlm(
         f.write(" ".join(results))
 
     file_name = "/tmp/my_model.arpa"
+    _do_model = True
 
     # Commands to run in the container
-    if not _do_limit_topk:
+    if _do_model:
         cmd = (
             f"{kenlm_bin}/lmplz -T /tmp -S 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
         )
@@ -295,7 +296,7 @@ def text_to_kenlm(
         file_name = file_name_fixed
 
     if _do_limit_topk:
-        file_name = f"/tmp/my_model-{_topk_words}-words.arpa"
+        file_name_words = f"/tmp/my_model-{_topk_words}-words.arpa"
 
         _, vocab_str = convert_and_filter_topk(intermediate_file, _topk_words)
 
@@ -304,7 +305,7 @@ def text_to_kenlm(
                 os.path.join(kenlm_bin, "filter"),
                 "single",
                 "model:{}".format(file_name),
-                file_name,
+                file_name_words,
             ],
             input=vocab_str.encode("utf-8"),
             check=True,
