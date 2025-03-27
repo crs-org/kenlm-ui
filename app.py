@@ -261,37 +261,38 @@ def text_to_kenlm(
     with open(intermediate_file, "w") as f:
         f.write(" ".join(results))
 
-    # Commands to run in the container
-    cmd = (
-        f"{kenlm_bin}/lmplz -T /tmp -S 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
-    )
-    r = subprocess.run(cmd, shell=True)
-    print(r)
-    if r.returncode != 0:
-        raise gr.Error("Failed to create the model.")
-
     file_name = "/tmp/my_model.arpa"
-    file_name_fixed = "/tmp/my_model_correct.arpa"
 
-    # Fix the ARPA file
-    with (
-        open(file_name, "r") as read_file,
-        open(file_name_fixed, "w") as write_file,
-    ):
-        has_added_eos = False
-        for line in read_file:
-            if not has_added_eos and "ngram 1=" in line:
-                count = line.strip().split("=")[-1]
-                write_file.write(line.replace(f"{count}", f"{int(count) + 1}"))
-            elif not has_added_eos and "<s>" in line:
-                write_file.write(line)
-                write_file.write(line.replace("<s>", "</s>"))
-                has_added_eos = True
-            else:
-                write_file.write(line)
+    # Commands to run in the container
+    if not _do_limit_topk:
+        cmd = (
+            f"{kenlm_bin}/lmplz -T /tmp -S 80% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
+        )
+        r = subprocess.run(cmd, shell=True)
+        print(r)
+        if r.returncode != 0:
+            raise gr.Error("Failed to create the model.")
 
-    # Replace the file name
-    file_name = file_name_fixed
+        file_name_fixed = "/tmp/my_model_correct.arpa"
+
+        # Fix the ARPA file
+        with (
+            open(file_name, "r") as read_file,
+            open(file_name_fixed, "w") as write_file,
+        ):
+            has_added_eos = False
+            for line in read_file:
+                if not has_added_eos and "ngram 1=" in line:
+                    count = line.strip().split("=")[-1]
+                    write_file.write(line.replace(f"{count}", f"{int(count) + 1}"))
+                elif not has_added_eos and "<s>" in line:
+                    write_file.write(line)
+                    write_file.write(line.replace("<s>", "</s>"))
+                    has_added_eos = True
+                else:
+                    write_file.write(line)
+        # Replace the file name
+        file_name = file_name_fixed
 
     if _do_limit_topk:
         file_name = f"/tmp/my_model-{_topk_words}-words.arpa"
@@ -302,7 +303,7 @@ def text_to_kenlm(
             [
                 os.path.join(kenlm_bin, "filter"),
                 "single",
-                "model:{}".format(file_name_fixed),
+                "model:{}".format(file_name),
                 file_name,
             ],
             input=vocab_str.encode("utf-8"),
@@ -330,7 +331,7 @@ def text_to_kenlm(
         if _do_quantize:
             file_name = f"/tmp/my_model-{_binary_type}.bin"
 
-            cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name_fixed} {file_name}"
+            cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name} {file_name}"
             r = subprocess.run(cmd, shell=True)
             print(r)
             if r.returncode != 0:
