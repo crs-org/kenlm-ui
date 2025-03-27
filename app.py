@@ -242,7 +242,7 @@ def text_to_kenlm(
     if not _order:
         raise gr.Error("Please add an order.")
 
-    gr.Info("Started to make the model, wait...")
+    gr.Info("Started to create a model, wait...")
 
     results = []
 
@@ -282,7 +282,7 @@ def text_to_kenlm(
         r = subprocess.run(cmd, shell=True)
         print(r)
         if r.returncode != 0:
-            raise gr.Error("Failed to create the model.")
+            raise gr.Error("Failed to create model")
 
         file_name_fixed = "/tmp/my_model_correct.arpa"
 
@@ -336,7 +336,7 @@ def text_to_kenlm(
             r = subprocess.run(cmd, shell=True)
             print(r)
             if r.returncode != 0:
-                raise gr.Error("Failed to quantize the model.")
+                raise gr.Error("Failed to quantize model")
 
             file_name = file_name_quantized
     else:
@@ -347,7 +347,7 @@ def text_to_kenlm(
             r = subprocess.run(cmd, shell=True)
             print(r)
             if r.returncode != 0:
-                raise gr.Error("Failed to quantize the model.")
+                raise gr.Error("Failed to quantize model")
 
     gr.Success("Model created.")
 
@@ -458,7 +458,7 @@ with gr.Blocks(
                 )
 
                 do_quantize = gr.Checkbox(
-                    label="Quantize the model",
+                    label="Quantize model",
                     value=False,
                 )
 
