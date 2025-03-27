@@ -254,6 +254,16 @@ def text_to_kenlm(
                 line = line.lower()
             results.append(line)
 
+    # Remove previous files
+    for file in [
+        "/tmp/intermediate.txt", "/tmp/my_model.arpa", "/tmp/my_model-trie.bin", "/tmp/my_model_correct.arpa",
+        "/tmp/my_model-trie-10000-words.arpa", "/tmp/my_model-trie-10000-words.bin",
+        "/tmp/model_vocab.txt", "/tmp/model_lexicon.txt", "/tmp/model_tokens.txt",
+    ]:
+        if os.path.exists(file):
+            os.remove(file)
+
+    # Generate files: vocab, lexicon, tokens
     generate_files(results)
 
     # Write to intermediate file
@@ -314,6 +324,7 @@ def text_to_kenlm(
         if r.returncode != 0:
             raise gr.Error("Failed to filter the model.")
 
+        # Regenerate files: vocab, lexicon, tokens
         generate_files(vocab_str.split("\n"))
 
         if _do_quantize:
