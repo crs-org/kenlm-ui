@@ -197,6 +197,7 @@ def enhance_text(kenlm_model, text):
 
     return fixed_label
 
+
 def generate_files(results):
     # Write words to a file
     words = [r.split() for r in results]
@@ -221,6 +222,7 @@ def generate_files(results):
         for word in words:
             splitted_word = " ".join(list(word + "|"))
             f.write(f"{word}\t{splitted_word}\n")
+
 
 def text_to_kenlm(
     _text_file,
@@ -262,12 +264,12 @@ def text_to_kenlm(
 
     # Commands to run in the container
     cmd = (
-        f"{kenlm_bin}/lmplz --temp_prefix {app_dir} --memory 90% --text {intermediate_file} --arpa {app_dir}/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
+        f"{kenlm_bin}/lmplz --temp_prefix {app_dir} --memory 90% --text {intermediate_file} --arpa /tmp/my_model.arpa -o {_order} --prune {_arpa_prune} --discount_fallback",
     )
     print(subprocess.run(cmd, shell=True))
 
-    file_name = f"{app_dir}/my_model.arpa"
-    file_name_fixed = f"{app_dir}/my_model_correct.arpa"
+    file_name = "/tmp/my_model.arpa"
+    file_name_fixed = "/tmp/my_model_correct.arpa"
 
     # Fix the ARPA file
     with (
@@ -290,7 +292,7 @@ def text_to_kenlm(
     file_name = file_name_fixed
 
     if _do_limit_topk:
-        file_name = f"{app_dir}/my_model-{_topk_words}-words.arpa"
+        file_name = f"/tmp/my_model-{_topk_words}-words.arpa"
 
         _, vocab_str = convert_and_filter_topk(app_dir, intermediate_file, _topk_words)
 
@@ -311,7 +313,7 @@ def text_to_kenlm(
 
         if _do_quantize:
             file_name_quantized = (
-                f"{app_dir}/my_model-{_binary_type}-{_topk_words}-words.bin"
+                f"/tmp/my_model-{_binary_type}-{_topk_words}-words.bin"
             )
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name} {file_name_quantized}"
@@ -320,7 +322,7 @@ def text_to_kenlm(
             file_name = file_name_quantized
     else:
         if _do_quantize:
-            file_name = f"{app_dir}/my_model-{_binary_type}.bin"
+            file_name = f"/tmp/my_model-{_binary_type}.bin"
 
             cmd = f"{kenlm_bin}/build_binary -a {_binary_a_bits} -b {_binary_b_bits} -q {_binary_q_bits} -v {_binary_type} {file_name_fixed} {file_name}"
             print(subprocess.run(cmd, shell=True))
