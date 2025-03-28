@@ -19,21 +19,16 @@ uv venv --python 3.12.9
 
 source .venv/bin/activate
 
+uv pip install --upgrade setuptools wheel
+uv pip install https://github.com/kpu/kenlm/archive/master.zip --no-build-isolation
+
 uv pip install -r requirements.txt
-
-uv pip install https://github.com/kpu/kenlm/archive/master.zip
 ```
 
-## Build KenLM in a container
+## Run
 
-```
-git clone https://github.com/kpu/kenlm/
-
-mkdir kenlm/build
-cd kenlm/build
-
-cmake ..
-make -j2
+```shell
+uv run app.py
 ```
 
 ## Build image
