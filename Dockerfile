@@ -48,6 +48,10 @@ COPY --chown=hf-space:hf-space . ${HOME}/app
 
 WORKDIR ${HOME}/app
 
+# Install KenLM module
+RUN pip install --upgrade setuptools wheel
+RUN pip install https://github.com/kpu/kenlm/archive/master.zip --no-build-isolation
+
 RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz && \
     mkdir kenlm/build && \
     cd kenlm/build && \
@@ -58,8 +62,5 @@ RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz && \
 RUN mkdir ${HF_HOME} && chmod a+rwx ${HF_HOME}
 
 RUN pip install --no-cache-dir -r /home/hf-space/app/requirements.txt
-
-# Install KenLM module
-RUN pip install https://github.com/kpu/kenlm/archive/master.zip
 
 CMD ["python", "app.py"]
