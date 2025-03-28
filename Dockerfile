@@ -52,6 +52,7 @@ WORKDIR ${HOME}/app
 RUN pip install --upgrade setuptools wheel
 RUN pip install https://github.com/kpu/kenlm/archive/master.zip --no-build-isolation
 
+# Install KenLM binaries
 RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz && \
     mkdir kenlm/build && \
     cd kenlm/build && \
@@ -59,8 +60,9 @@ RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz && \
     make -j2 && \
     cd ../..
 
-RUN mkdir ${HF_HOME} && chmod a+rwx ${HF_HOME}
-
+# Install app dependencies
 RUN pip install --no-cache-dir -r /home/hf-space/app/requirements.txt
+
+RUN mkdir ${HF_HOME} && chmod a+rwx ${HF_HOME}
 
 CMD ["python", "app.py"]
