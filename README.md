@@ -47,3 +47,9 @@ docker build -t kenlm-trainer-gradio .
 ```shell
 docker run -it --rm -p 8888:7860 --name kenlm-trainer kenlm-trainer-gradio
 ```
+
+## Access
+
+```shell
+docker exec -it kenlm-trainer bash
+```
