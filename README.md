@@ -31,19 +31,29 @@ uv pip install -r requirements.txt
 uv run app.py
 ```
 
-## Build image
+### Docker
+
+### Pull from a Registry
+
+```shell
+docker run -it --rm -p 8888:7860 --name kenlm-ui ghcr.io/crs-org/kenlm-ui:main
+```
+
+### Build locally
+
+#### Build image
 
 ```shell
 docker build -t kenlm-trainer-gradio .
 ```
 
-## Run
+#### Run
 
 ```shell
 docker run -it --rm -p 8888:7860 --name kenlm-trainer kenlm-trainer-gradio
 ```
 
-## Access
+#### Access
 
 ```shell
 docker exec -it kenlm-trainer bash
