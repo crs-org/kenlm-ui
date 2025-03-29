@@ -8,7 +8,7 @@ on:
       - 'v*'
 
 jobs:
-  login:
+  build-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,3 +42,4 @@ jobs:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
