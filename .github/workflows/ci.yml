@@ -1,7 +1,6 @@
 name: ci
 
-permissions:
-  packages: write
+permissions: write-all
 
 on:
   push:
