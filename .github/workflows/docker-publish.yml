@@ -1,16 +1,14 @@
-name: ci
+name: docker-publish
 
 permissions: write-all
 
 on:
   push:
-    branches:
-      - 'main'
     tags:
       - 'v*'
 
 jobs:
-  build-image:
+  build-and-publish-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
