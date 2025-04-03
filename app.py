@@ -357,17 +357,17 @@ def text_to_kenlm(
 
     vocab_file = gr.DownloadButton(
         value=Path("/tmp/model_vocab.txt"),
-        label="Created model_vocab.txt",
+        label="model_vocab.txt",
     )
 
     lexicon_file = gr.DownloadButton(
         value=Path("/tmp/model_lexicon.txt"),
-        label="Created model_lexicon.txt",
+        label="model_lexicon.txt",
     )
 
     tokens_file = gr.DownloadButton(
         value=Path("/tmp/model_tokens.txt"),
-        label="Created model_tokens.txt",
+        label="model_tokens.txt",
     )
 
     # Create an archive with all files using https://github.com/ouch-org/ouch
@@ -384,7 +384,7 @@ def text_to_kenlm(
 
     archive_file = gr.DownloadButton(
         value=Path(archive_file),
-        label="all_files.zip",
+        label="Download all_files.zip",
     )
 
     return [model_file, vocab_file, lexicon_file, tokens_file, archive_file]
@@ -491,19 +491,19 @@ with gr.Blocks(
 
             with gr.Column():
                 kenlm_model = gr.DownloadButton(
-                    label="Created KenLM model",
+                    label="KenLM model",
                 )
 
                 vocab_file = gr.DownloadButton(
-                    label="Created model_vocab.txt",
+                    label="model_vocab.txt",
                 )
 
                 lexicon_file = gr.DownloadButton(
-                    label="Created model_lexicon.txt",
+                    label="model_lexicon.txt",
                 )
 
                 tokens_file = gr.DownloadButton(
-                    label="Created model_tokens.txt",
+                    label="model_tokens.txt",
                 )
 
                 archive_file = gr.DownloadButton(

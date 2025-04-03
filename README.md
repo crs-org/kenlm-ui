@@ -44,7 +44,7 @@ docker run -it --rm -p 8888:7860 --name kenlm-ui ghcr.io/crs-org/kenlm-ui:0.1.0
 #### Build image
 
 ```shell
-docker build -t kenlm-trainer-gradio .
+docker build --platform linux/arm64 -t kenlm-trainer-gradio .
 ```
 
 #### Run

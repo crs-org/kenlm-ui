@@ -1,5 +1,7 @@
 FROM python:3.12.9-bookworm
 
+ARG TARGETARCH
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
