@@ -36,7 +36,9 @@ uv run app.py
 ### Pull from a Registry
 
 ```shell
-docker run -it --rm -p 8888:7860 --name kenlm-ui ghcr.io/crs-org/kenlm-ui:0.2.0
+docker run -it --rm -p 7860:7860 --name kenlm-ui ghcr.io/crs-org/kenlm-ui:0.2.0
+
+podman run -it --rm -p 7860:7860 --name kenlm-ui ghcr.io/crs-org/kenlm-ui:0.2.0
 ```
 
 ### Build locally
