@@ -370,7 +370,24 @@ def text_to_kenlm(
         label="Created model_tokens.txt",
     )
 
-    return [model_file, vocab_file, lexicon_file, tokens_file]
+    # Create an archive with all files using https://github.com/ouch-org/ouch
+    archive_file = "/tmp/all_files.zip"
+    cmd = f"/tmp/ouch compress --yes --fast {file_name} /tmp/model_vocab.txt /tmp/model_lexicon.txt /tmp/model_tokens.txt {archive_file}"
+
+    r = subprocess.run(cmd, shell=True)
+    print(r)
+
+    if r.returncode != 0:
+        raise gr.Error("Failed to create archive")
+
+    gr.Success("Archive created.")
+
+    archive_file = gr.DownloadButton(
+        value=Path(archive_file),
+        label="all_files.zip",
+    )
+
+    return [model_file, vocab_file, lexicon_file, tokens_file, archive_file]
 
 
 with gr.Blocks(
@@ -489,6 +506,10 @@ with gr.Blocks(
                     label="Created model_tokens.txt",
                 )
 
+                archive_file = gr.DownloadButton(
+                    label="An arhive with all files",
+                )
+
         gr.Button("Create").click(
             text_to_kenlm,
             inputs=[
@@ -504,7 +525,7 @@ with gr.Blocks(
                 topk_words,
                 do_limit_topk,
             ],
-            outputs=[kenlm_model, vocab_file, lexicon_file, tokens_file],
+            outputs=[kenlm_model, vocab_file, lexicon_file, tokens_file, archive_file],
         )
 
         with gr.Row():

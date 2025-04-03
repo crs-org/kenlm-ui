@@ -48,6 +48,15 @@ COPY --chown=hf-space:hf-space . ${HOME}/app
 
 WORKDIR ${HOME}/app
 
+# Install ouch
+RUN ARCHIVE="ouch_$( [ "$TARGETARCH" = "arm64" ] && echo 'aarch64-unknown-linux-gnu' || echo 'x86_64-unknown-linux-musl' ).zip" && \
+    wget "https://github.com/crs-org/ouch-releases/releases/download/v0.2.0/$ARCHIVE" && \
+    unzip "$ARCHIVE" && \
+    mv ouch_*/ouch /tmp/ouch && \
+    chmod +x /tmp/ouch && \
+    /tmp/ouch --version && \
+    rm -rf "$ARCHIVE" ouch_*
+
 # Install KenLM module
 RUN pip install --upgrade setuptools wheel
 RUN pip install https://github.com/kpu/kenlm/archive/master.zip --no-build-isolation
