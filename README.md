@@ -10,6 +10,8 @@ short_description: 'Score texts and build KenLMs'
 
 # KenLM UI
 
+<img width="600" src="./kenlm_ui_screenshot.jpg" />
+
 ## Install
 
 ```shell
