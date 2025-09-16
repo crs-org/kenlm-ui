@@ -1,1 +1,1 @@
-gradio==5.23.0
+gradio
